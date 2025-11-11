@@ -9,22 +9,21 @@ spring:
       initialize-schema: always
 
   datasource:
-    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
-
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
+    url: jdbc:mysql://localhost:3306/batch_practice?rewriteBatchedStatements=true&useUnicode=true&characterEncoding=UTF-8
+    username: root # ?? ?? DB ??
+    password: 0000 # ?? ?? DB ????
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     hibernate:
-      ddl-auto: create-drop
-    show-sql: true
+      ddl-auto: create
+
+    show-sql: false
+
     properties:
         hibernate:
-        format_sql: true
-        use_sql_comments: true
-    defer-datasource-initialization: true
+          format_sql: false
+          use_sql_comments: false
+          jdbc:
+            batch_size: 1000
+          order_inserts: true
