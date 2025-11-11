@@ -19,7 +19,7 @@ public class BatchScheduler {
     private final JobLauncher jobLauncher;
     private final Job dormantUserJob;
 
-    @Scheduled(fixedDelay = 10000)
+    @Scheduled(fixedDelay = 86400000) // 24 hours in milliseconds
     public void runDormantUserJob() {
         try {
             log.info("휴면 회원 전환 배치 스케줄러 시작...");
