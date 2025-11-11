@@ -7,12 +7,11 @@ services:
     container_name: mysql-for-batch
 
     command:
-      - --default-authentication-plugin=mysql_native_password
       - --character-set-server=utf8mb4
       - --collation-server=utf8mb4_unicode_ci
 
     environment:
-      MYSQL_ROOT_PASSWORD: 0000
+      MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: batch_practice
       TZ: Asia/Seoul
 
