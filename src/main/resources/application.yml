@@ -27,3 +27,8 @@ spring:
           jdbc:
             batch_size: 1000
           order_inserts: true
+
+logging:
+  level:
+    com.example.springbatchpractice: INFO
+    org.springframework.batch: INFO
