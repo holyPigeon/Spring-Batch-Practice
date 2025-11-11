@@ -1,19 +1,32 @@
--- 1. 휴면 대상 (1년 1일 전 로그인)
--- INTERVAL 1 YEAR -> '1' YEAR, INTERVAL 1 DAY -> '1' DAY
-INSERT INTO users (username, status, last_login_date)
-VALUES ('oldUser', 'ACTIVE', CURRENT_TIMESTAMP - '1' YEAR - '1' DAY);
+-- 100만 번의 재귀(반복)를 허용하도록 세션 설정을 변경
+SET SESSION cte_max_recursion_depth = 1000000;
 
--- 2. 휴면 대상 (2년 전 로그인)
--- INTERVAL 2 YEAR -> '2' YEAR
-INSERT INTO users (username, status, last_login_date)
-VALUES ('veryOldUser', 'ACTIVE', CURRENT_TIMESTAMP - '2' YEAR);
+TRUNCATE TABLE users;
 
--- 3. 휴면 대상 아님 (10일 전 로그인)
--- INTERVAL 10 DAY -> '10' DAY
-INSERT INTO users (username, status, last_login_date)
-VALUES ('activeUser', 'ACTIVE', CURRENT_TIMESTAMP - '10' DAY);
+-- 100만 건의 숫자(cte)를 생성하고,
+-- 그 숫자(n)를 기반으로 90%는 휴면 대상, 10%는 활성 대상으로 나누어
+-- "users" 테이블에 '단 1번의 쿼리로' INSERT 합니다.
 
--- 4. 휴면 대상 아님 (이미 휴면 상태)
--- INTERVAL 2 YEAR -> '2' YEAR
 INSERT INTO users (username, status, last_login_date)
-VALUES ('alreadyDormantUser', 'DORMANT', CURRENT_TIMESTAMP - '2' YEAR);
+WITH RECURSIVE cte (n) AS
+                   (
+                       SELECT 1 -- 1. 시작 숫자
+                       UNION ALL
+                       SELECT n + 1 FROM cte WHERE n < 1000000 -- 2. 100만까지 1씩 증가
+                   )
+SELECT
+    -- 3. 10% (n이 10의 배수)는 'activeUser'로 생성
+    CASE
+        WHEN (n % 10 = 0) THEN CONCAT('activeUser', n)
+        ELSE CONCAT('dormantTargetUser', n)
+        END AS username,
+
+    'ACTIVE' AS status,
+
+    -- 4. 10%는 10일 전 로그인, 90%는 1년 1일 전 로그인
+    CASE
+        WHEN (n % 10 = 0) THEN NOW() - INTERVAL 10 DAY
+        ELSE NOW() - INTERVAL 1 YEAR - INTERVAL 1 DAY
+        END AS last_login_date
+
+FROM cte;
