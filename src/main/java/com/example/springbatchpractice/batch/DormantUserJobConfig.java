@@ -37,7 +37,7 @@ public class DormantUserJobConfig {
     private final PlatformTransactionManager transactionManager;
     private final EntityManagerFactory entityManagerFactory;
 
-    private static final int CHUNK_SIZE = 100;
+    private static final int CHUNK_SIZE = 1000;
     private static final int LOGGING_CHUNK_INTERVAL = 100;
 
     @Bean
